@@ -89,19 +89,88 @@ bool readFile(const string &filename, int LF1[], int LF2[], int &EXP1, int &EXP2
 }
 
 // Task 1
+const int NUM_RANK = 17;
+const int RANK_WEIGHT[NUM_RANK] = {1, 2, 3, 4, 5, 7, 8, 9, 10, 12, 15, 18, 20, 30, 40, 50, 70};
+
 int gatherForces(int LF1[], int LF2[])
 {
     // TODO: Implement this function
-    
+    int LF1Strength = 0, LF2Strength = 0;
 
-    return 0;
+    for(int i = 0; i < NUM_RANK; i++)
+    {
+        LF1Strength += LF1[i]*RANK_WEIGHT[i];
+    }
+    for(int i = 0; i < NUM_RANK; i++)
+    {
+        LF2Strength += LF2[i]*RANK_WEIGHT[i];
+    }
+
+    return LF1Strength + LF2Strength;
 }
 
 // Task 2
+const string TARGET[8] = {"", "", "", "Buon Ma Thuot", "Duc Lap", "Dak Lak", "National Route 21", "National Route 14"};
+
 string determineRightTarget(const string &target)
 {
     // TODO: Implement this function
-    return "INVALID";
+    int savedNum[3] = {}; // save maximum of 3 integers
+    int countNum = -1; // quantity of integers found
+
+    for(int i = 0; i < target.length(); i++)
+    {
+        if(target[i] >= '0' && target[i] <= '9') // check if the character is the digit
+        {
+            int num = target[i] - '0'; // convert digit to number
+
+            // if has more digit, continue reading it
+            while(i + 1 < target.length() && target[i + 1] >= '0' && target[i + 1] <= '9')
+            {
+                num = num * 10 + (target[++i] - '0');
+            }
+
+            if(num >= 0 && num <= 100)
+            {
+                countNum++;
+
+                if(countNum < 3) savedNum[countNum] = num;
+                // cout << "savedNum[0] :" << savedNum[0] << endl;
+            }
+            // else return "INVALID"; // if has more than 3 integers found
+        }
+    }
+
+    // no integer found
+    if(countNum == -1) return "INVALID";
+
+    int ID; // ID of actual target
+    
+    // one integer found
+    if(countNum == 0)
+    {
+        ID = savedNum[0];
+        if(ID >= 3 && ID <= 7) return TARGET[ID];
+        else if(ID >= 0 && ID <=2) return "DECOY";
+        else return "INVALID";
+    }
+    else if(countNum == 1)
+    {
+        ID = ((savedNum[0] + savedNum[1]) % 5) + 3;
+        return TARGET[ID];
+    }
+    else if(countNum == 2)
+    {
+        int maxNum = savedNum[0];
+
+        if(savedNum[1] > maxNum) maxNum = savedNum[1];
+        if(savedNum[2] > maxNum) maxNum = savedNum[2];
+
+        ID = (maxNum % 5) + 3;
+        return TARGET[ID];
+    }
+
+    return "INVALID"; // if has more than 3 integers found
 }
 
 string decodeTarget(const string &message, int EXP1, int EXP2)
