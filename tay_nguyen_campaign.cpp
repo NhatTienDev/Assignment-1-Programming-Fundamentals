@@ -89,12 +89,24 @@ bool readFile(const string &filename, int LF1[], int LF2[], int &EXP1, int &EXP2
 }
 
 // Task 1
+const int NUM_RANK = 17;
+const int RANK_WEIGHT[NUM_RANK] = {1, 2, 3, 4, 5, 7, 8, 9, 10, 12, 15, 18, 20, 30, 40, 50, 70};
+
 int gatherForces(int LF1[], int LF2[])
 {
     // TODO: Implement this function
-    
+    int LF1Strength = 0, LF2Strength = 0;
 
-    return 0;
+    for(int i = 0; i < NUM_RANK; i++)
+    {
+        LF1Strength += LF1[i]*RANK_WEIGHT[i];
+    }
+    for(int i = 0; i < NUM_RANK; i++)
+    {
+        LF2Strength += LF2[i]*RANK_WEIGHT[i];
+    }
+
+    return LF1Strength + LF2Strength;
 }
 
 // Task 2
