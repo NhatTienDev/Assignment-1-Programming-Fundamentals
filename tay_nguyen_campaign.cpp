@@ -279,6 +279,46 @@ string decodeTarget(const string &message, int EXP1, int EXP2)
 void manageLogistics(int LF1, int LF2, int EXP1, int EXP2, int &T1, int &T2, int E)
 {
     // TODO: Implement this function
+    if(LF1 > 1000) LF1 = 1000;
+    if(LF1 < 0) LF1 = 0;
+
+    if(LF2 > 1000) LF2 = 1000;
+    if(LF2 < 0) LF2 = 0;
+
+    if(E == 0)
+    {
+        double deltaT1, deltaT2;
+
+        deltaT1 = ((double)(LF1/(LF1 + LF2)) * (T1 + T2)) * (1 + (double)(EXP1 - EXP2)/100);
+        deltaT2 = (double)(T1 + T2) - deltaT1;
+
+        T1 = ceil(T1 + deltaT1);
+        T2 = ceil(T2 + deltaT2);
+
+        if(T1 > 3000) T1 = 3000;
+        if(T2 > 3000) T2 = 3000;
+    }
+    else if(E >= 1 && E <= 9)
+    {
+        T1 = ceil(T1 - ((double)E*1/100)*T1);
+        T2 = ceil(T2 - ((double)E*1/200)*T2);
+    }
+    else if(E >= 10 && E <= 29)
+    {
+        T1 = T1 + E*50;
+        T2 = T2 + E*50;
+    }
+    else if(E >= 30 && E <= 59)
+    {
+        T1 = ceil(T1 + ((double)E*1/200)*T1);
+        T2 = ceil(T2 + ((double)E*1/500)*T2);
+    }
+
+    if(T1 > 3000) T1 = 3000;
+    if(T1 < 0) T1 = 0;
+
+    if(T2 > 3000) T2 = 3000;
+    if(T2 < 0) T2 = 0;
 }
 
 // Task 4
