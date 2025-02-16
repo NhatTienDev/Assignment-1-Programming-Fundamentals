@@ -83,8 +83,11 @@ bool readFile(const string &filename, int LF1[], int LF2[], int &EXP1, int &EXP2
 
     // handle fifth line from input file
     stringstream line5(data[4]);
-    line5 >> E; // how about the condition for E
+    line5 >> E;
 
+    if(E > 99) E = 99;
+    if(E < 0) E = 0;
+    
     return true;
 }
 
