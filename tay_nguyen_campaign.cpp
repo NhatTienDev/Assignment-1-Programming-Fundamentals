@@ -325,7 +325,30 @@ void manageLogistics(int LF1, int LF2, int EXP1, int EXP2, int &T1, int &T2, int
 int planAttack(int LF1, int LF2, int EXP1, int EXP2, int T1, int T2, int battleField[10][10])
 {
     // TODO: Implement this function
-    return 0;
+    // initial total strength of 2 corps
+    double S = (LF1 + LF2) + (EXP1 + EXP2)*5 + (T1 + T2)*2;
+    int finalStrength;
+
+    for(int i = 0; i < 10; i++)
+    {
+        for(int j = 0; j < 10; j++)
+        {
+            // odd rows
+            if(i % 2 == 0)
+            {
+                S -= (double)battleField[i][j]*3/2;
+            }
+            // even rows
+            else
+            {
+                S -= (double)battleField[i][j]*2/3;
+            }
+        }
+    }
+
+    finalStrength = ceil(S);
+
+    return finalStrength;
 }
 
 // Task 5
