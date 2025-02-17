@@ -352,10 +352,60 @@ int planAttack(int LF1, int LF2, int EXP1, int EXP2, int T1, int T2, int battleF
 }
 
 // Task 5
+const int MATRIX_SIZE = 25;
+
 int resupply(int shortfall, int supply[5][5])
 {
     // TODO: Implement this function
-    return 0;
+    int supplyMatrix[MATRIX_SIZE];
+    int index = 0;
+
+    // convert from matrix 5x5 to one-dimensional matrix with 25 elements
+    for(int i = 0; i < 5; i++)
+    {
+        for(int j = 0; i < 5; j++)
+        {
+            supplyMatrix[index] = supply[i][j];
+            index++;
+        }
+    }
+
+    // sort from smallest to largest
+    for(int i = 0; i < MATRIX_SIZE - 1; i++)
+    {
+        for(int j = i + 1; j < MATRIX_SIZE; j++)
+        {
+            if(supplyMatrix[i] > supplyMatrix[j])
+            {
+                int temp = supplyMatrix[i];
+                supplyMatrix[i] = supplyMatrix[j];
+                supplyMatrix[j] = temp;
+            }
+        }
+    }
+
+    int optimalSum = INT_MAX;
+
+    for(int i  = 0; i < MATRIX_SIZE - 4; i++)
+    {
+        for(int j = i + 1; j < MATRIX_SIZE - 3; j++)
+        {
+            for(int k = j + 1; j < MATRIX_SIZE - 2; k++)
+            {
+                for(int l = k + 1; l < MATRIX_SIZE - 1; l++)
+                {
+                    for(int m = l + 1; m < MATRIX_SIZE; m++)
+                    {
+                        int sum = supplyMatrix[i] + supplyMatrix[j] + supplyMatrix[k] + supplyMatrix[l] + supplyMatrix[m];
+
+                        if(sum >= shortfall && sum < optimalSum) optimalSum = sum;
+                    }
+                }
+            }
+        }
+    }
+
+    return optimalSum;
 }
 
 ////////////////////////////////////////////////
