@@ -98,6 +98,17 @@ const int RANK_WEIGHT[NUM_RANK] = {1, 2, 3, 4, 5, 7, 8, 9, 10, 12, 15, 18, 20, 3
 int gatherForces(int LF1[], int LF2[])
 {
     // TODO: Implement this function
+    for(int i = 0; i < 17; i++)
+    {
+        if(LF1[i] > 1000) LF1[i] = 1000;
+        if(LF1[i] < 0) LF1[i] = 0;
+    }
+    for(int i = 0; i < 17; i++)
+    {
+        if(LF2[i] > 1000) LF2[i] = 1000;
+        if(LF2[i] < 0) LF2[i] = 0;
+    }
+
     int LF1Strength = 0, LF2Strength = 0;
 
     for(int i = 0; i < NUM_RANK; i++)
@@ -178,16 +189,6 @@ string determineRightTarget(const string &target)
 
 const string ACTUAL_TARGET[5] = {"Buon Ma Thuot", "Duc Lap", "Dak Lak", "National Route 21", "National Route 14"};
 
-bool isMatchedTarget(const string &decodedMessage)
-{
-    for(int i = 0; i < 5; i++)
-    {
-        if(decodedMessage == ACTUAL_TARGET[i]) return true;
-    }
-
-    return false;
-}
-
 string toLowerCase(const string &s)
 {
     string lowerCaseString = s;
@@ -213,13 +214,17 @@ string CaesarCipherMethod(const string &message, int shift)
 
         if(ch >= 'A' && ch <= 'Z')
         {
-            decodedMessage += char(((ch - 'A' - shift + 26) % 26) + 'A');
+            decodedMessage += char(((ch - 'A' + shift) % 26) + 'A');
         }
         else if(ch >= 'a' && ch <= 'z')
         {
-            decodedMessage += char(((ch - 'a' - shift + 26) % 26) + 'a');
+            decodedMessage += char(((ch - 'a' + shift) % 26) + 'a');
         }
         else if(ch == ' ')
+        {
+            decodedMessage += ch;
+        }
+        else if(ch >= '0' && ch <= '9')
         {
             decodedMessage += ch;
         }
@@ -250,6 +255,12 @@ string reversedStringMethod(const string &message)
 string decodeTarget(const string &message, int EXP1, int EXP2)
 {
     // TODO: Implement this function
+    if(EXP1 > 600) EXP1 = 600;
+    if(EXP1 < 0) EXP1 = 0;
+
+    if(EXP2 > 600) EXP2 = 600;
+    if(EXP2 < 0) EXP2 = 0;
+
     string decodedMessage;
 
     if(EXP1 >= 300 && EXP2 >= 300)
@@ -257,7 +268,13 @@ string decodeTarget(const string &message, int EXP1, int EXP2)
         int shift = (EXP1 + EXP2) % 26;
         decodedMessage = CaesarCipherMethod(message, shift);
         
-        if(isMatchedTarget(decodedMessage) == true) return decodedMessage;
+        for(int i = 0; i < 5; i++)
+        {
+            if(toLowerCase(decodedMessage) == toLowerCase(ACTUAL_TARGET[i]))
+            {
+                return ACTUAL_TARGET[i];
+            }
+        }
     }
     if(EXP1 < 300 || EXP2 < 300)
     {
@@ -279,29 +296,44 @@ string decodeTarget(const string &message, int EXP1, int EXP2)
 void manageLogistics(int LF1, int LF2, int EXP1, int EXP2, int &T1, int &T2, int E)
 {
     // TODO: Implement this function
-    if(LF1 > 1000) LF1 = 1000;
+    // if(LF1 > 1000) LF1 = 1000;
     if(LF1 < 0) LF1 = 0;
 
-    if(LF2 > 1000) LF2 = 1000;
+    // if(LF2 > 1000) LF2 = 1000;
     if(LF2 < 0) LF2 = 0;
+
+    if(EXP1 > 600) EXP1 = 600;
+    if(EXP1 < 0) EXP1 = 0;
+
+    if(EXP2 > 600) EXP2 = 600;
+    if(EXP2 < 0) EXP2 = 0;
+
+    if(T1 > 3000) T1 = 3000;
+    if(T1 < 0) T1 = 0;
+
+    if(T2 > 3000) T2 = 3000;
+    if(T2 < 0) T2 = 0;
+
+    if(E > 99) E = 99;
+    if(E < 0) E = 0;
 
     if(E == 0)
     {
         double deltaT1, deltaT2;
 
-        deltaT1 = ((double)(LF1/(LF1 + LF2)) * (T1 + T2)) * (1 + (double)(EXP1 - EXP2)/100);
+        deltaT1 = ((double)(LF1/(double)(LF1 + LF2)) * (T1 + T2)) * (1 + (double)(EXP1 - EXP2)/100.0);
         deltaT2 = (double)(T1 + T2) - deltaT1;
 
-        T1 = ceil(T1 + deltaT1);
-        T2 = ceil(T2 + deltaT2);
+        T1 = T1 + ceil(deltaT1);
+        T2 = T2 + ceil(deltaT2);
 
         if(T1 > 3000) T1 = 3000;
         if(T2 > 3000) T2 = 3000;
     }
     else if(E >= 1 && E <= 9)
     {
-        T1 = ceil(T1 - ((double)E*1/100)*T1);
-        T2 = ceil(T2 - ((double)E*1/200)*T2);
+        T1 = ceil(T1 - ((double)E*1/100.0)*T1);
+        T2 = ceil(T2 - ((double)E*1/200.0)*T2);
     }
     else if(E >= 10 && E <= 29)
     {
@@ -310,8 +342,8 @@ void manageLogistics(int LF1, int LF2, int EXP1, int EXP2, int &T1, int &T2, int
     }
     else if(E >= 30 && E <= 59)
     {
-        T1 = ceil(T1 + ((double)E*1/200)*T1);
-        T2 = ceil(T2 + ((double)E*1/500)*T2);
+        T1 = ceil(T1 + ((double)E*1/200.0)*T1);
+        T2 = ceil(T2 + ((double)E*1/500.0)*T2);
     }
 
     if(T1 > 3000) T1 = 3000;
@@ -326,6 +358,24 @@ int planAttack(int LF1, int LF2, int EXP1, int EXP2, int T1, int T2, int battleF
 {
     // TODO: Implement this function
     // initial total strength of 2 corps
+    // if(LF1 > 1000) LF1 = 1000;
+    if(LF1 < 0) LF1 = 0;
+
+    // if(LF2 > 1000) LF2 = 1000;
+    if(LF2 < 0) LF2 = 0;
+
+    if(EXP1 > 600) EXP1 = 600;
+    if(EXP1 < 0) EXP1 = 0;
+
+    if(EXP2 > 600) EXP2 = 600;
+    if(EXP2 < 0) EXP2 = 0;
+
+    if(T1 > 3000) T1 = 3000;
+    if(T1 < 0) T1 = 0;
+
+    if(T2 > 3000) T2 = 3000;
+    if(T2 < 0) T2 = 0;
+    
     double S = (LF1 + LF2) + (EXP1 + EXP2)*5 + (T1 + T2)*2;
     int finalStrength;
 
@@ -334,14 +384,14 @@ int planAttack(int LF1, int LF2, int EXP1, int EXP2, int T1, int T2, int battleF
         for(int j = 0; j < 10; j++)
         {
             // odd rows
-            if(i % 2 == 0)
+            if(i % 2 == 1)
             {
-                S -= (double)battleField[i][j]*3/2;
+                S -= battleField[i][j]*3/2.0;
             }
             // even rows
             else
             {
-                S -= (double)battleField[i][j]*2/3;
+                S -= battleField[i][j]*2/3.0;
             }
         }
     }
@@ -363,7 +413,7 @@ int resupply(int shortfall, int supply[5][5])
     // convert from matrix 5x5 to one-dimensional matrix with 25 elements
     for(int i = 0; i < 5; i++)
     {
-        for(int j = 0; i < 5; j++)
+        for(int j = 0; j < 5; j++)
         {
             supplyMatrix[index] = supply[i][j];
             index++;
@@ -390,7 +440,7 @@ int resupply(int shortfall, int supply[5][5])
     {
         for(int j = i + 1; j < MATRIX_SIZE - 3; j++)
         {
-            for(int k = j + 1; j < MATRIX_SIZE - 2; k++)
+            for(int k = j + 1; k < MATRIX_SIZE - 2; k++)
             {
                 for(int l = k + 1; l < MATRIX_SIZE - 1; l++)
                 {
@@ -405,7 +455,8 @@ int resupply(int shortfall, int supply[5][5])
         }
     }
 
-    return optimalSum;
+    if(optimalSum == INT_MAX) return -1;
+    else return optimalSum;
 }
 
 ////////////////////////////////////////////////
