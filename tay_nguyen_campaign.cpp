@@ -141,7 +141,7 @@ string determineRightTarget(const string &target)
             // if has more digit, continue reading it
             while(i + 1 < target.length() && target[i + 1] >= '0' && target[i + 1] <= '9')
             {
-                num = num * 10 + (target[++i] - '0');
+                num = num*10 + (target[++i] - '0');
             }
 
             if(num >= 0 && num <= 100)
@@ -377,26 +377,28 @@ int planAttack(int LF1, int LF2, int EXP1, int EXP2, int T1, int T2, int battleF
     if(T2 < 0) T2 = 0;
     
     double S = (LF1 + LF2) + (EXP1 + EXP2)*5 + (T1 + T2)*2;
-    int finalStrength;
+    double sumEven = 0;
+    double sumOdd = 0;
+    double finalStrength;
 
     for(int i = 0; i < 10; i++)
     {
         for(int j = 0; j < 10; j++)
         {
-            // odd rows
-            if(i % 2 == 1)
-            {
-                S -= battleField[i][j]*3/2.0;
-            }
             // even rows
+            if(i % 2 == 0)
+            {
+                sumEven += battleField[i][j];
+            }
+            // odd rows
             else
             {
-                S -= battleField[i][j]*2/3.0;
+                sumOdd += battleField[i][j];
             }
         }
     }
 
-    finalStrength = ceil(S);
+    finalStrength = S - floor((sumOdd * 3.0 / 2) + (sumEven * 2.0 / 3));
 
     return finalStrength;
 }
